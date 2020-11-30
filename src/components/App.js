@@ -6,12 +6,11 @@
  */
 
 import React from "react";
-import CovTracker from "./CovTracker.js";
 
 const App = (props) => {
   return (
     <div>
-      <CovTracker />
+      <h1>It works!</h1>
     </div>
   );
 };
