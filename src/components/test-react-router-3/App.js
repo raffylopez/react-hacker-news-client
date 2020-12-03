@@ -1,18 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import cx from 'classnames';
 import './App.css'
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {items:[]};
+    this.state = {items:[], isLoading: true};
   }
 
   fetchDetailsFromId = async (articleId)=> {
     const result = await fetch(`https://hacker-news.firebaseio.com/v0/item/${articleId}.json`)
     const json = await result.json()
     const { id, title, url } = json;
-    this.setState({items: this.state.items.concat({id, title, text: url})});
+    await this.setState({items: this.state.items.concat({id, title, text: url})});
+    if (this.state.items.length >= 5) {
+    this.setState({isLoading: false})
+    }
   };
 
   componentDidMount() {
@@ -22,16 +27,21 @@ class App extends React.Component {
       .then((listOfIds)=>{
         const portion = listOfIds.slice(0,30);
         const uniques = [...new Set(portion)]
-        return portion.forEach(async(id)=>await this.fetchDetailsFromId(id))
-      })
-    // .then((listOfIds)=>listOfIds.map(fetchDetailsFromId))
+        return portion.forEach(async(id)=>await this.fetchDetailsFromId(id))      })
   }
 
   render() {
     return (
       <Router>
-      <div style={ {backgroundColor: "#4E5E83",
-          whiteSpace: 'nowrap', wordSpacing: -1} }>
+      <TransitionGroup>
+      <Loader isLoading={this.state.isLoading}/>
+      </TransitionGroup>
+      <Header/>
+      <div className="content" style={ {
+      alignItems : 'flex-start',
+      alignContent: 'flex-start',
+        backgroundColor: "#4E5E83",
+          display: 'flex'} }>
         <SideBar items={ this.state.items }/><Main items={this.state.items}/>
       </div>
       </Router>
@@ -41,21 +51,33 @@ class App extends React.Component {
 
 export default App;
 
+const Header = (props)=> 
+  (
+    <div style={{
+        color: 'white',
+        borderRadius: '0.5em',
+        marginBottom: '0em',
+        padding: '0rem 0rem 0.5rem 0rem',
+        width: '91vw',
+    }} {...props.children}><h1>Y Combinator HackerNews</h1></div>
+  )
+
 const Main = ({items}) => {
   return (
     <div style={{
-        backgroundColor: "white",
+        left: "calc(30vw + 1.5rem)",
+       position: 'fixed'  , backgroundColor: "#E8EBEF",
         borderRadius: '0.5em',
-        display: "inline-block",
         marginLeft: '1rem',
         marginRight: '-1rem',
         padding: '1rem',
-        width: '70vw',
+        width: '64vw',
         verticalAlign: 'top',
         overflow: 'hidden',
-        whiteSpace: 'pre-wrap'
+        whiteSpace: 'pre-wrap',
+        height: 'auto'
+        
     }}>
-    <div style={{textTransform:"uppercase"}}>HACKERNEWS</div>
     <Route path="/article/:id" render={
       ({match}) => {
         console.log("MATCH", match)
@@ -70,6 +92,13 @@ const Main = ({items}) => {
   );
 };
 
+const Loader = ({isLoading})=> (
+  <div>
+    <div className="box_wrapper">
+        <div className={cx({box: isLoading, box_hidden: !isLoading})}>&nbsp;</div>
+    </div>
+  </div>
+)
 
 class SideBar extends React.Component {
   constructor(props) {
@@ -78,7 +107,7 @@ class SideBar extends React.Component {
 
   render() {
     return (
-      <div style={ { maxWidth: '30vw',overflow:'hidden', whiteSpace: 'pre-wrap', backgroundColor: '#EEF1F4', padding: '1rem', borderRadius: '0.5rem', color: 'white', display:'inline-block', width: '30vw' } }>
+      <div style={ { maxWidth: '30vw',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1rem', borderRadius: '0.5rem', color: 'white', width: '30vw' } }>
       {this.props.items.map(item=>
         (
           <SidebarItem key={item.id}>
@@ -102,10 +131,11 @@ const Article = ({item})=> {
   if (item) {
     return (
       <div>
-      <div><h2>{item.title}</h2></div>
-      <div><a href={item.text} target="_blank">{item.text}</a></div>
+        <div style={{textTransform:"uppercase"}}>Article Link</div>
+        <div><h2>{item.title}</h2></div>
+        <div><a href={item.text} target="_blank">{item.text}</a></div>
       </div>
     )
   }
-  return <div></div>
+  return null;
 }
