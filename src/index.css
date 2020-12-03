@@ -24,7 +24,7 @@ body {
   color: #323232;
   --g-body-text: "Libre Franklin";
   --g-visibility-transition: all 0.3s ease-in;
-  --sidebar-size: 50vw;
+  --sidebar-size: 40vw;
 }
 
 * {

@@ -7,16 +7,21 @@ import './App.css'
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {items:[], isLoading: true};
+    this.state = {items:[], isLoading: true, currentComments: []};
   }
 
   fetchDetailsFromId = async (articleId)=> {
     const result = await fetch(`https://hacker-news.firebaseio.com/v0/item/${articleId}.json`)
     const json = await result.json()
-    const { id, title, url } = json;
-    await this.setState({items: this.state.items.concat({id, title, text: url})});
+    const { id, title, url, kids } = json;
+
+    // const portion = kids.slice(0,10);
+    // const uniques = [...new Set(portion)]
+    // portion.forEach(async(id)=>await this.fetchDetailsFromId(id))
+
+    await this.setState({items: this.state.items.concat({id, title, text: url, kids})});
     if (this.state.items.length >= 10) {
-    this.setState({isLoading: false})
+      this.setState({isLoading: false})
     }
   };
 
@@ -27,20 +32,22 @@ class App extends React.Component {
       .then((listOfIds)=>{
         const portion = listOfIds.slice(0,30);
         const uniques = [...new Set(portion)]
-        return portion.forEach(async(id)=>await this.fetchDetailsFromId(id))      })
+        return portion.forEach(async(id)=>await this.fetchDetailsFromId(id))
+      })
   }
 
   render() {
     return (
       <Router>
-        <Loader isLoading={this.state.isLoading}/>
+      <Loader isLoading={this.state.isLoading}/>
       <Header/>
+
       <div className="content" style={ {
-      alignItems : 'flex-start',
-      alignContent: 'flex-start',
-        backgroundColor: "#4E5E83",
+        alignItems : 'flex-start',
+          alignContent: 'flex-start',
+          backgroundColor: "#4E5E83",
           display: 'flex'} }>
-        <SideBar items={ this.state.items }/><Main items={this.state.items}/>
+      <SideBar items={ this.state.items }/><Main items={this.state.items}/>
       </div>
       </Router>
     );
@@ -49,60 +56,60 @@ class App extends React.Component {
 
 export default App;
 
-const Header = (props)=> 
+const Header = (props)=>
   (
     <div style={{
-        color: 'white',
+      color: 'white',
         borderRadius: '0.5em',
         marginBottom: '0em',
         padding: '0rem 0rem 0.5rem 0rem',
         width: '91vw',
-    }} {...props.children}><h1>Y Combinator HackerNews</h1></div>
+    }} {...props.children}>
+
+    <h1>HackerNews Viewer</h1>
+    </div>
   )
 
 const Main = ({items}) => {
   return (
     <TransitionGroup component={null}>
-  <CSSTransition classNames="dialog" timeout={300}>
+    <CSSTransition classNames="dialog" timeout={300}>
     <div style={{
-        left: "calc(var(--sidebar-size) + 2vw)",
-       position: 'fixed'  , backgroundColor: "#E8EBEF",
+      left: "calc(var(--sidebar-size) + 2vw)",
+        overflow: 'hidden',
+        backgroundColor: "#E8EBEF",
         borderRadius: '0.5em',
         marginLeft: '1rem',
         marginRight: '-1rem',
-        padding: '1rem',
+        padding: '1.5rem',
         width: 'calc(94vw - var(--sidebar-size))',
         verticalAlign: 'top',
-        overflow: 'hidden',
         whiteSpace: 'pre-wrap',
         height: 'auto'
-        
+
     }}>
     <Route path="/article/:id" render={
       ({match}) => {
-        console.log("MATCH", match)
-        console.log("ITEMS", items)
         const itemd = items.find(item=>item.id == match.params.id);
-        console.log(itemd)
         return (
           <Article item={items && itemd }/>
         )}
     } />
     </div>
-  </CSSTransition>
+    </CSSTransition>
     </TransitionGroup>
   );
 };
 
 const Loader = ({isLoading})=> (
   <div>
-    <TransitionGroup component={null}>
+  <TransitionGroup component={null}>
   {isLoading && <CSSTransition classNames="dialog" timeout={300}>
     <div className="box_wrapper">
-        <div className="box">&nbsp;</div>
+    <div className="box">&nbsp;</div>
     </div>
-  </CSSTransition>}
-    </TransitionGroup>
+    </CSSTransition>}
+  </TransitionGroup>
   </div>
 )
 
@@ -114,7 +121,9 @@ class SideBar extends React.Component {
   render() {
     return (
 
-      <div style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
+      <div style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1.5rem 1rem 1rem 1.5rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
+
+        <div style={{textTransform:"uppercase", fontSize: "0.8rem", color: 'black'}}>Best Stories</div>
       {this.props.items.map(item=>
         (
           <SidebarItem key={item.id}>
@@ -129,23 +138,92 @@ class SideBar extends React.Component {
 
 const SidebarItem = (props) => {
   return (
-    <div style={ {color: 'white', fontFamily: 'Arial', margin: '0.5rem'} } {...props}>
+    <div style={ {color: 'white', fontFamily: 'Arial', margin: '0.7rem 0.5rem 0.7rem 0.5rem'} } {...props}>
     </div>
   )
 };
 
-const Article = ({item})=> {
-  if (item) {
-    return (
-      <div>
-        <div style={{textTransform:"uppercase"}}>Article Link</div>
+class Article extends React.Component{
+
+  constructor(props) {
+    super(props)
+  }
+
+  componentDidMount() {
+    // if (this.props.item){
+    //   console.log(this.props);
+    // }
+    // const {item} = this.props;
+    // if (item) {
+    //      const portion = item.kids.slice(0,5);
+    //   //   return portion.forEach(async(id)=>await this.fetchDetailsFromId(id))
+    // }
+    // .then((listOfIds)=>{
+    // })
+  }
+
+  render() {
+    const {item} = this.props;
+    if (item) {
+      return (
+        <div>
+        <div style={{textTransform:"uppercase", fontSize: "0.8rem"}}>Article Link</div>
         <div><h2>{item.title}</h2></div>
         <div><a href={item.text} target="_blank">{item.text}</a></div>
-      </div>
-    )
+        <h3 style={{marginTop: '0.5em'}}>Comments</h3>
+        <div style={{fontSize:'0.9rem'}}>{item.kids.map(item=>(<ul><Comment key={item} num={item}></Comment></ul>))}</div>
+        </div>
+      )
+    }
+    return null;
   }
-  return null;
 }
 
-const Comment = ()=> {
+const parser = new DOMParser;
+
+class Comment extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = { num: this.props.num, comment_text: null, comment_author:null, isDeleted: false }
+  }
+
+  fetchDetailsFromId = async (articleId)=> {
+    const result = await fetch(`https://hacker-news.firebaseio.com/v0/item/${articleId}.json`)
+    const json = await result.json()
+    const { id, text, by, deleted } = json;
+    console.log(json);
+
+    // await this.setState({items: this.state.comments.concat({id, text, by})});
+    await this.setState({comment_text: text, comment_author:by, isDeleted: deleted });
+  };
+
+  componentDidMount() {
+    // console.log(this.props.num)
+    // this.fetchDetailsFromId(this.props.num)
+    (async()=>this.fetchDetailsFromId(this.props.num))()
+  }
+
+  render() {
+
+    const { comment_text, comment_author, isDeleted } = this.state;
+
+    if (isDeleted || (comment_text && comment_text.trim() == "")) {
+      return null
+    }
+
+
+    if (comment_text) {
+      let dom = parser.parseFromString(
+        '<!doctype html><body>' + `${comment_text}`,
+        'text/html');
+      let decodedString = comment_author ? dom.body.textContent + " - " + comment_author : dom.body.textContent;
+      return (<li style={{margin: '0.5rem 0.5rem 0.5rem 0.7rem'}}>{decodedString}</li>)
+    }else {
+      return <LoadingTextPlaceholder/>
+    }
+  }
 }
+
+const LoadingTextPlaceholder = () => 
+(<li style={{margin: '0.5rem 0.5rem 0.5rem 0.7rem'}}><span style={{display:"inline-block", width: "100%",height: "16px", margin: "0.1rem 0.1rem 0.1rem 0.1rem", borderRadius: "0.2rem", backgroundColor:"#DDD"}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li>)
+
