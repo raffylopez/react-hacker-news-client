@@ -8,7 +8,7 @@
 import React from "react";
 import {BrowserRouter as Router} from 'react-router-dom';
 
-import ComposingWithStyle from "./composing-with-style/ComposingWithStyle";
+import ComposingWithStyle from "../composing-with-style/ComposingWithStyle";
 
 const App = (props) => {
   return (

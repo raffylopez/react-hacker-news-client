@@ -7,6 +7,7 @@
 
 const loaders = require("./loaders.js");
 const path = require("path");
+
 module.exports = {
   context: __dirname,
   entry: "./src/index.js",
@@ -15,10 +16,12 @@ module.exports = {
     filename: "main.js",
   },
   devServer: {
+    overlay: true,
     hot: true,
     contentBase: path.resolve(__dirname, "dist/public"),
     compress: true,
     disableHostCheck: true,
+    historyApiFallback: true
   },
   module: {
     rules: [loaders.JSLoader, loaders.CSSLoaders],

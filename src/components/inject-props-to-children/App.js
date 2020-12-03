@@ -8,13 +8,21 @@
 import React from "react";
 import {BrowserRouter as Router} from 'react-router-dom';
 
-import ComposingWithStyle from "./composing-with-style/ComposingWithStyle";
+import Parent from "./Parent";
+import Child from "./Child";
 
 const App = (props) => {
   return (
     <div>
-      <h1>It works!</h1>
-      <ComposingWithStyle/>
+      <Parent inheritance={"A Great Physique"}>
+        <Child breed={"superior"}/>
+        <Child/>
+        <Child/>
+        <Child/>
+        <Child/>
+        <Child breed={"superior"}/>
+        <Child/>
+      </Parent>
     </div>
   );
 };
