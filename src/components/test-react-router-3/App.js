@@ -15,7 +15,7 @@ class App extends React.Component {
     const json = await result.json()
     const { id, title, url } = json;
     await this.setState({items: this.state.items.concat({id, title, text: url})});
-    if (this.state.items.length >= 5) {
+    if (this.state.items.length >= 10) {
     this.setState({isLoading: false})
     }
   };
@@ -33,9 +33,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-      <TransitionGroup>
-      <Loader isLoading={this.state.isLoading}/>
-      </TransitionGroup>
+        <Loader isLoading={this.state.isLoading}/>
       <Header/>
       <div className="content" style={ {
       alignItems : 'flex-start',
@@ -64,14 +62,16 @@ const Header = (props)=>
 
 const Main = ({items}) => {
   return (
+    <TransitionGroup component={null}>
+  <CSSTransition classNames="dialog" timeout={300}>
     <div style={{
-        left: "calc(30vw + 1.5rem)",
+        left: "calc(var(--sidebar-size) + 2vw)",
        position: 'fixed'  , backgroundColor: "#E8EBEF",
         borderRadius: '0.5em',
         marginLeft: '1rem',
         marginRight: '-1rem',
         padding: '1rem',
-        width: '64vw',
+        width: 'calc(94vw - var(--sidebar-size))',
         verticalAlign: 'top',
         overflow: 'hidden',
         whiteSpace: 'pre-wrap',
@@ -89,14 +89,20 @@ const Main = ({items}) => {
         )}
     } />
     </div>
+  </CSSTransition>
+    </TransitionGroup>
   );
 };
 
 const Loader = ({isLoading})=> (
   <div>
+    <TransitionGroup component={null}>
+  {isLoading && <CSSTransition classNames="dialog" timeout={300}>
     <div className="box_wrapper">
-        <div className={cx({box: isLoading, box_hidden: !isLoading})}>&nbsp;</div>
+        <div className="box">&nbsp;</div>
     </div>
+  </CSSTransition>}
+    </TransitionGroup>
   </div>
 )
 
@@ -107,7 +113,8 @@ class SideBar extends React.Component {
 
   render() {
     return (
-      <div style={ { maxWidth: '30vw',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1rem', borderRadius: '0.5rem', color: 'white', width: '30vw' } }>
+
+      <div style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
       {this.props.items.map(item=>
         (
           <SidebarItem key={item.id}>
@@ -138,4 +145,7 @@ const Article = ({item})=> {
     )
   }
   return null;
+}
+
+const Comment = ()=> {
 }
