@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import cx from 'classnames';
+import img from '../../public/img/bowler.png'
 import './App.css'
+
 
 class App extends React.Component {
   constructor(props) {
@@ -13,16 +15,12 @@ class App extends React.Component {
   fetchDetailsFromId = async (articleId)=> {
     const result = await fetch(`https://hacker-news.firebaseio.com/v0/item/${articleId}.json`)
     const json = await result.json()
-    const { id, title, url, kids } = json;
+    const { id, title, url, kids, by } = json;
 
-    // const portion = kids.slice(0,10);
-    // const uniques = [...new Set(portion)]
-    // portion.forEach(async(id)=>await this.fetchDetailsFromId(id))
-
-    await this.setState({items: this.state.items.concat({id, title, text: url, kids})});
-    if (this.state.items.length >= 10) {
-      this.setState({isLoading: false})
-    }
+    await this.setState({items: this.state.items.concat({id, title, text: url, kids, article_author: by})});
+    // if (this.state.items.length >= 10) {
+    this.setState({isLoading: false})
+    // }
   };
 
   componentDidMount() {
@@ -66,7 +64,7 @@ const Header = (props)=>
         width: '91vw',
     }} {...props.children}>
 
-    <h1>HackerNews Viewer</h1>
+    <h1><img className="logo" src={img}/>HN Viewer</h1>
     </div>
   )
 
@@ -92,7 +90,7 @@ const Main = ({items}) => {
       ({match}) => {
         const itemd = items.find(item=>item.id == match.params.id);
         return (
-          <Article item={items && itemd }/>
+          <Article key={match.params.id} item={items && itemd }/>
         )}
     } />
     </div>
@@ -123,7 +121,7 @@ class SideBar extends React.Component {
 
       <div style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1.5rem 1rem 1rem 1.5rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
 
-        <div style={{textTransform:"uppercase", fontSize: "0.8rem", color: 'black'}}>Best Stories</div>
+      <div style={{textTransform:"uppercase", fontSize: "0.8rem", color: 'black'}}>Best Stories</div>
       {this.props.items.map(item=>
         (
           <SidebarItem key={item.id}>
@@ -138,7 +136,7 @@ class SideBar extends React.Component {
 
 const SidebarItem = (props) => {
   return (
-    <div style={ {color: 'white', fontFamily: 'Arial', margin: '0.7rem 0.5rem 0.7rem 0.5rem'} } {...props}>
+    <div style={ {color: 'white', margin: '0.7rem 0.5rem 0.7rem 0.5rem'} } {...props}>
     </div>
   )
 };
@@ -149,29 +147,20 @@ class Article extends React.Component{
     super(props)
   }
 
-  componentDidMount() {
-    // if (this.props.item){
-    //   console.log(this.props);
-    // }
-    // const {item} = this.props;
-    // if (item) {
-    //      const portion = item.kids.slice(0,5);
-    //   //   return portion.forEach(async(id)=>await this.fetchDetailsFromId(id))
-    // }
-    // .then((listOfIds)=>{
-    // })
+  componentDidMount(){
   }
 
   render() {
+    console.log(this.props.item ? this.props.item: "BAR")
     const {item} = this.props;
     if (item) {
       return (
         <div>
-        <div style={{textTransform:"uppercase", fontSize: "0.8rem"}}>Article Link</div>
-        <div><h2>{item.title}</h2></div>
+        <div style={{textTransform:"uppercase", fontSize: "0.8rem", margin: "0.2rem 0rem 0.5rem 0rem"}}>Posted by {item.article_author}</div>
+        <div><h2 style={{fontSize:'2.2rem'}}>{item.title}</h2></div>
         <div><a href={item.text} target="_blank">{item.text}</a></div>
         <h3 style={{marginTop: '0.5em'}}>Comments</h3>
-        <div style={{fontSize:'0.9rem'}}>{item.kids.map(item=>(<ul><Comment key={item} num={item}></Comment></ul>))}</div>
+        <div style={{fontSize:'1rem'}}>{item.kids.map(item=>(<ul><Comment key={item} num={item}></Comment></ul>))}</div>
         </div>
       )
     }
@@ -184,46 +173,58 @@ const parser = new DOMParser;
 class Comment extends React.Component{
   constructor(props){
     super(props)
-    this.state = { num: this.props.num, comment_text: null, comment_author:null, isDeleted: false }
+    this.state = { num: this.props.num, comment_text: null, comment_author:null, isDeleted: false, comment_time: null }
   }
 
   fetchDetailsFromId = async (articleId)=> {
     const result = await fetch(`https://hacker-news.firebaseio.com/v0/item/${articleId}.json`)
     const json = await result.json()
-    const { id, text, by, deleted } = json;
-    console.log(json);
+    const { id, text, by, deleted, time } = json;
 
-    // await this.setState({items: this.state.comments.concat({id, text, by})});
-    await this.setState({comment_text: text, comment_author:by, isDeleted: deleted });
+    await this.setState({comment_text: text, comment_author:by, isDeleted: deleted, comment_time: time });
   };
 
   componentDidMount() {
-    // console.log(this.props.num)
-    // this.fetchDetailsFromId(this.props.num)
-    (async()=>this.fetchDetailsFromId(this.props.num))()
+    (async()=>{await this.fetchDetailsFromId(this.props.num)})()
   }
 
+  padNumber = (num)=> {
+    return String(num).length == 1 ? `0${num}` : `${num}`
+  }
+
+ timeConverter = (UNIX_timestamp) => {
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + this.padNumber(hour) + ':' + this.padNumber(min) + ':' + this.padNumber(sec) ;
+  return time;
+}
   render() {
 
-    const { comment_text, comment_author, isDeleted } = this.state;
+    const { comment_text, comment_author, isDeleted, comment_time } = this.state;
+    const formatted = this.timeConverter(comment_time);
 
     if (isDeleted || (comment_text && comment_text.trim() == "")) {
       return null
     }
 
-
     if (comment_text) {
       let dom = parser.parseFromString(
         '<!doctype html><body>' + `${comment_text}`,
         'text/html');
-      let decodedString = comment_author ? dom.body.textContent + " - " + comment_author : dom.body.textContent;
+      let decodedString = comment_author ? (<div style={{whiteSpace:"pre-line"}}><p style={{textDecoration: "underline"}}>{comment_author} {comment_time && `at ${formatted}`}</p><p>{dom.body.textContent}</p></div>) : (<p>{dom.body.textContent}</p>);
       return (<li style={{margin: '0.5rem 0.5rem 0.5rem 0.7rem'}}>{decodedString}</li>)
-    }else {
+    } else {
       return <LoadingTextPlaceholder/>
     }
   }
 }
 
-const LoadingTextPlaceholder = () => 
-(<li style={{margin: '0.5rem 0.5rem 0.5rem 0.7rem'}}><span style={{display:"inline-block", width: "100%",height: "16px", margin: "0.1rem 0.1rem 0.1rem 0.1rem", borderRadius: "0.2rem", backgroundColor:"#DDD"}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li>)
+const LoadingTextPlaceholder = () =>
+  (<li style={{margin: '0.5rem 0.5rem 0.5rem 0.7rem'}}><span style={{display:"inline-block", width: "100%",height: "16px", margin: "0.1rem 0.1rem 0.1rem 0.1rem", borderRadius: "0.2rem", backgroundColor:"#DDD"}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li>)
 

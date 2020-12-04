@@ -74,7 +74,7 @@ div:empty {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1000;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -145,6 +145,7 @@ opacity: 0.25;
 
 }
 
+
 .dialog-enter {
   opacity: 0.01;
   transform: scale(1.1);
@@ -165,4 +166,10 @@ opacity: 0.25;
   opacity: 0.01;
   transform: scale(1.1);
   transition: all 300ms;
+}
+
+img.logo {
+  display: inline-block;
+  height: 1.7rem; width: 1.7rem;
+  margin-right: 0.4rem;
 }

@@ -19,7 +19,12 @@ const CSSLoaders = {
   }]
 }
 
+const MiscLoaders = {
+  test: /\.(png|jpg|jpeg|gif|svg)$/, use: [{loader: "file-loader", options:{}} ]
+};
+
 module.exports = {
   JSLoader,
-  CSSLoaders
+  CSSLoaders,
+  MiscLoaders,
 }

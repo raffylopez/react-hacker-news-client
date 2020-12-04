@@ -24,6 +24,7 @@ module.exports = {
     historyApiFallback: true
   },
   module: {
-    rules: [loaders.JSLoader, loaders.CSSLoaders],
+    rules: [loaders.JSLoader, loaders.CSSLoaders, loaders.MiscLoaders
+    ],
   },
 };
