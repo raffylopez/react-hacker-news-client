@@ -15,9 +15,13 @@ class App extends React.Component {
   fetchDetailsFromId = async (articleId)=> {
     const result = await fetch(`https://hacker-news.firebaseio.com/v0/item/${articleId}.json`)
     const json = await result.json()
-    const { id, title, url, kids, by } = json;
+    const { id, title, url, kids, by, time } = json;
+    const obj = {id, title, text: url, kids, time, article_author: by};
+    const sorter = (a,b) => {
+      return a.time > b.time ? 1: a== b? 0 : -1;
+    }
 
-    await this.setState({items: this.state.items.concat({id, title, text: url, kids, article_author: by})});
+    await this.setState({items: this.state.items.concat(obj).sort(sorter)});
     // if (this.state.items.length >= 10) {
     this.setState({isLoading: false})
     // }
@@ -160,7 +164,7 @@ class Article extends React.Component{
         <div><h2 style={{fontSize:'2.2rem'}}>{item.title}</h2></div>
         <div><a href={item.text} target="_blank">{item.text}</a></div>
         <h3 style={{marginTop: '0.5em'}}>Comments</h3>
-        <div style={{fontSize:'1rem'}}>{item.kids.map(item=>(<ul><Comment key={item} num={item}></Comment></ul>))}</div>
+        <div style={{fontSize:'0.9rem'}}>{item.kids.map(item=>(<ul><Comment key={item} num={item}></Comment></ul>))}</div>
         </div>
       )
     }
@@ -185,7 +189,7 @@ class Comment extends React.Component{
   };
 
   componentDidMount() {
-    (async()=>{await this.fetchDetailsFromId(this.props.num)})()
+    (async()=>await this.fetchDetailsFromId(this.props.num))()
   }
 
   padNumber = (num)=> {
