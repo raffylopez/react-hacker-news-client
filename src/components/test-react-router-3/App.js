@@ -125,12 +125,12 @@ class SideBar extends React.Component {
 
          <div style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1.5rem 1rem 1rem 1.5rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
 
-         <div style={{textTransform:"uppercase", fontSize: "0.8rem", color: 'black'}}>Best Stories</div>
+         <div style={{textTransform:"uppercase", fontSize: "0.8rem", padding: "1rem 0 0 0.5rem", margin: "1rem 0 0.5 0.5rem", color: 'black'}}>Best Stories</div>
          {this.props.items.map(item=>
             (
                <SidebarItem key={item.id}>
                <Link style={{textDecoration: "none", color: "black"}} to={`/article/${item.id}`}>
-<p style={{display:'inline-block'}}>
+<p style={{display:'inline-block', fontSize: '1.1rem'}}>
                {item.time && <p style={{color: '#787', marginBottom:'0.2em',marginLeft: '-0.8em',display: 'block',fontSize: '0.7em'}}>{timeConverter(item.time)}</p>}
                {item.title}</p>
                </Link>
