@@ -49,7 +49,7 @@ class App extends React.Component {
                alignContent: 'flex-start',
                backgroundColor: "#4E5E83",
                display: 'flex'} }>
-         <SideBar items={ this.state.items }/><Main items={this.state.items}/>
+         <SideBar isLoading={this.state.isLoading} items={ this.state.items }/><Main items={this.state.items}/>
          </div>
          </Router>
       );
@@ -121,9 +121,9 @@ class SideBar extends React.Component {
    }
 
    render() {
+      const { isLoading } = this.props;
       return (
-
-         <div style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1.5rem 1rem 1rem 1.5rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
+         <div className={cx({hidden: isLoading, visible: !isLoading })} style={ { maxWidth: 'var(--sidebar-size)',overflow:'hidden', backgroundColor: '#EEF1F4', padding: '1.5rem 1rem 1rem 1.5rem', borderRadius: '0.5rem', color: 'white', width: 'var(--sidebar-size)' } }>
 
          <div style={{textTransform:"uppercase", fontSize: "0.8rem", padding: "0.5rem 0 0 0.5rem", margin: "1rem 0 0.5 0.5rem", color: 'black'}}>Best Stories</div>
          {this.props.items.map(item=>
