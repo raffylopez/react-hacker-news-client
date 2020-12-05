@@ -14,7 +14,7 @@
       "devserver": "webpack-dev-server --hot --watch --overlay --history-api-fallback",
       "prodbuild": "webpack --mode=production ",
       "prepublish": "npm run clean && npm run move-assets",
-      "publish": "npm run prodbuild && git add . -A && git commit -m 'Build-`date +'%d%m%Y%H%M%S'` for Production' && git push origin develop -f"
+      "publish": "npm run prodbuild && git add . -A && git commit -m 'Build-`date +'%d%m%Y%H%M%S'` for Production' && git push origin master -f"
    },
    "devDependencies": {
 "@babel/core":"7.12.3",
