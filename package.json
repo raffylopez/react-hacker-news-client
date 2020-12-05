@@ -7,14 +7,14 @@
       "test": "",
       "clean": "rm -rf ./dist",
       "premove-assets" : "npm run clean",
-      "move-assets": "mkdir ./dist && cp -r src/public ./dist",
+      "move-public-assets": "mkdir ./dist && cp -r ./src/public ./dist",
       "dev": "webpack --mode=development",
       "devbuild": "webpack --mode=development",
       "predevserver": "npm run clean && npm run move-assets && npm run devbuild",
       "devserver": "webpack-dev-server --hot --watch --overlay --history-api-fallback",
       "prodbuild": "webpack --mode=production ",
-      "prepublish": "npm run clean && npm run move-assets",
-      "publish": "npm run prodbuild && git add . -A && git commit -m 'Build-$(date +'%d%m%Y%H%M%S') for Production' && git push origin master -f"
+      "prepublish": "npm run clean && npm run move-public-assets",
+      "publish": "npm run prodbuild && timestamp=$(date \"+%s\") && git add . -A && git commit -m \"automated deployment $timestamp\" && git push origin master -f"
    },
    "devDependencies": {
 "@babel/core":"7.12.3",
