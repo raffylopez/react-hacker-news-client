@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import { BrowserRouter as Router, Link, Route, useLocation } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import cx from 'classnames';
 import img from '../../public/img/bowler.png';
@@ -41,6 +41,7 @@ class App extends React.Component {
    render() {
       return (
          <Router>
+         <ScrollToTop />
          <Loader isLoading={this.state.isLoading}/>
          <Header/>
 
@@ -57,6 +58,14 @@ class App extends React.Component {
 }
 
 export default App;
+
+function ScrollToTop(props) {
+   const {pathname} = useLocation();
+   useEffect(()=> {
+      window.scroll(0,0)
+   }, [pathname]);
+   return null;
+}
 
 const Header = (props)=>
    (

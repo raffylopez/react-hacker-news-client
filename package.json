@@ -10,7 +10,7 @@
       "move-public-assets": "mkdir ./dist && cp -r ./src/public ./dist",
       "dev": "webpack --mode=development",
       "devbuild": "webpack --mode=development",
-      "predevserver": "npm run clean && npm run move-assets && npm run devbuild",
+      "predevserver": "npm run clean && npm run move-public-assets && npm run devbuild",
       "devserver": "webpack-dev-server --hot --watch --overlay --history-api-fallback",
       "prodbuild": "webpack --mode=production ",
       "prepublish": "npm run clean && npm run move-public-assets",
