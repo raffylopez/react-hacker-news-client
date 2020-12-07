@@ -63,6 +63,7 @@ function ScrollToTop(props) {
    const {pathname} = useLocation();
    useEffect(()=> {
       window.scroll(0,0)
+      console.log("Scrolled to top")
    }, [pathname]);
    return null;
 }
@@ -140,7 +141,7 @@ class SideBar extends React.Component {
                <SidebarItem key={item.id}>
                <Link style={{textDecoration: "none", color: "black"}} to={`/article/${item.id}`}>
 <p style={{display:'inline-block', fontSize: '1.1rem'}}>
-               {item.time && <p style={{color: '#787', marginBottom:'0.2em',marginLeft: '-0.8em',display: 'block',fontSize: '0.7em'}}>{timeConverter(item.time)}</p>}
+               {item.time && (<span style={{color: '#787', marginBottom:'0.2em',marginLeft: '-0.8em',display: 'block',fontSize: '0.7em'}}>{timeConverter(item.time)}</span>)}
                {item.title}</p>
                </Link>
                </SidebarItem>)
@@ -168,7 +169,6 @@ class Article extends React.Component{
    }
 
    render() {
-      console.log(this.props.item ? this.props.item: "BAR")
       const {item} = this.props;
       if (item) {
          return (
